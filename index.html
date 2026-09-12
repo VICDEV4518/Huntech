@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huntech | Comprobantes de servicio</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="login-panel" id="loginPanel">
+      <div class="brand-mark">HT</div>
+      <p class="eyebrow">Huntech servicio técnico</p>
+      <h1>Comprobantes de servicio</h1>
+      <p class="login-copy">Ingresa con tu cuenta para gestionar equipos, servicios y entregas.</p>
+      <form id="loginForm" class="login-form">
+        <label for="loginUser">Usuario</label>
+        <input id="loginUser" name="username" autocomplete="username" required placeholder="tecnico o administrador">
+        <label for="loginPassword">Contraseña</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        <button type="submit" class="primary-button">Iniciar sesión</button>
+        <p class="error" id="loginError" role="alert" hidden>Usuario o contraseña incorrectos.</p>
+      </form>
+    </section>
+
+    <section class="app-shell" id="appShell" hidden>
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Huntech servicio técnico</p>
+          <h1>Comprobantes de servicio</h1>
+          <p class="subtitle">Recibir y cotizar <span aria-hidden="true">→</span> entregar</p>
+        </div>
+        <div class="user-area">
+          <span class="user-badge" id="userBadge"></span>
+          <button type="button" class="text-button" id="logoutButton">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <section class="config-box" id="configBox" data-admin-only>
+        <div>
+          <strong>Conexión de datos</strong>
+          <span id="configStatus">Configura Google Sheets para guardar los tickets.</span>
+        </div>
+        <div class="config-row">
+          <input id="sheetUrl" type="url" placeholder="URL de la aplicación web de Apps Script">
+          <button type="button" class="secondary-button" id="saveUrlButton">Guardar</button>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Operaciones">
+        <button type="button" class="tab active" data-tab="recibir">1. Recibir y cotizar</button>
+        <button type="button" class="tab" data-tab="entregar">2. Entregar</button>
+      </nav>
+
+      <section class="tab-content active" id="tab-recibir">
+        <form class="card" id="ticketForm">
+          <p class="section-label">Datos del cliente</p>
+          <label for="r-cliente">Nombre del cliente *</label>
+          <input id="r-cliente" required placeholder="Nombre completo">
+          <p class="error" id="err-r-cliente" hidden>Ingresa el nombre del cliente.</p>
+          <label for="r-telefono">Teléfono</label>
+          <input id="r-telefono" type="tel" placeholder="Opcional">
+
+          <p class="section-label">Equipo</p>
+          <div class="form-grid">
+            <div><label for="r-tipo">Tipo de equipo</label><select id="r-tipo"><option>Laptop</option><option>PC de escritorio</option><option>Impresora</option><option>Consola</option></select></div>
+            <div><label for="r-enciende">Enciende</label><select id="r-enciende"><option>Si</option><option>No</option></select></div>
+            <div><label for="r-marca">Marca</label><input id="r-marca" placeholder="Ej: HP"></div>
+            <div><label for="r-modelo">Modelo</label><input id="r-modelo" placeholder="Ej: Pavilion 15"></div>
+          </div>
+          <label for="r-falla">Falla reportada</label>
+          <textarea id="r-falla" placeholder="Qué reporta el cliente"></textarea>
+          <p class="hint">Se guarda en Google Sheets y no aparece en el comprobante del cliente.</p>
+
+          <p class="section-label">Servicio</p>
+          <label>Conceptos del servicio *</label>
+          <div id="conceptosList"></div>
+          <button type="button" class="secondary-button full-button" id="addConceptButton">+ Agregar concepto</button>
+          <p class="error" id="err-r-concepto" hidden>Agrega al menos un concepto con monto.</p>
+          <div class="total-line"><span>Monto total</span><strong id="montoTotalDisplay">$0.00</strong></div>
+          <label for="r-anticipo">Anticipo</label>
+          <input id="r-anticipo" type="number" min="0" step="0.01" placeholder="0.00">
+          <button type="submit" class="primary-button" id="btnCrear">Generar comprobante</button>
+          <p class="error" id="err-r-conexion" hidden>El administrador debe configurar Google Sheets antes de continuar.</p>
+        </form>
+        <div id="r-preview"></div>
+      </section>
+
+      <section class="tab-content" id="tab-entregar" hidden>
+        <div class="card">
+          <label for="e-folio">Folio del ticket *</label>
+          <div class="search-row"><input id="e-folio" placeholder="Ej: 260825-143210"><button type="button" class="primary-button" id="searchButton">Buscar</button></div>
+          <p class="error" id="err-e-folio" hidden>No se encontró ese folio.</p>
+          <div id="e-datos"></div>
+          <button type="button" class="primary-button" id="btnEntregar" hidden>Marcar como entregado</button>
+          <p class="success" id="ok-entregado" hidden></p>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+</body>
+</html>
