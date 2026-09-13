@@ -18,6 +18,7 @@ function init() {
   $('passwordToggle').addEventListener('click', togglePassword);
   document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => cambiarTab(tab.dataset.tab)));
   $('saveUrlButton').addEventListener('click', guardarUrl);
+  $('testUrlButton').addEventListener('click', probarConexion);
   $('addConceptButton').addEventListener('click', () => agregarConcepto());
   $('clearFormButton').addEventListener('click', limpiarFormulario);
   $('ticketForm').addEventListener('submit', (event) => { event.preventDefault(); crearTicket(); });
@@ -52,18 +53,35 @@ function showApp(username) {
 function logout() { sessionStorage.removeItem('huntech-user'); currentUser = null; $('appShell').hidden = true; $('loginPanel').hidden = false; $('loginForm').reset(); }
 function initConfig() { $('sheetUrl').value = sheetUrl; updateConfigStatus(); }
 function updateConfigStatus() { $('configStatus').textContent = sheetUrl ? 'Conectado a Google Sheets.' : 'Configura Google Sheets para guardar los tickets.'; $('configBox').classList.toggle('connected', Boolean(sheetUrl)); }
+function getSheetUrl() {
+  const value = sheetUrl.trim();
+  if (!value) throw new Error('Primero pega la URL de la aplicación web de Apps Script.');
+  const url = new URL(value);
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url.origin + url.pathname.replace(/\/$/, ''))) throw new Error('La URL debe ser la aplicación web de Apps Script y terminar en /exec.');
+  return url.origin + url.pathname.replace(/\/$/, '');
+}
 function guardarUrl() { sheetUrl = $('sheetUrl').value.trim(); localStorage.setItem('huntech-sheet-url', sheetUrl); updateConfigStatus(); }
+async function probarConexion() {
+  const button = $('testUrlButton');
+  button.disabled = true;
+  button.textContent = 'Probando...';
+  try { await callSheet({}); $('configStatus').textContent = 'Conexión correcta con Google Sheets.'; $('configBox').classList.add('connected'); }
+  catch (error) { $('configStatus').textContent = error.message; $('configBox').classList.remove('connected'); }
+  finally { button.disabled = false; button.textContent = 'Probar conexión'; }
+}
 function cambiarTab(name) { document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === name)); document.querySelectorAll('.tab-content').forEach((tab) => { tab.hidden = !tab.id.endsWith(name); tab.classList.toggle('active', tab.id.endsWith(name)); }); }
 function callSheet(payload) {
   return new Promise((resolve, reject) => {
+    let endpoint;
+    try { endpoint = getSheetUrl(); } catch (error) { reject(error); return; }
     const callbackName = `huntechCallback${Date.now()}${Math.floor(Math.random() * 1000)}`;
     const query = Object.keys(payload).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(payload[key])}`).join('&');
     const script = document.createElement('script');
     const cleanup = () => { delete window[callbackName]; script.remove(); };
     const timeout = setTimeout(() => { cleanup(); reject(new Error('No hubo respuesta de Google Sheets. Verifica la URL y el despliegue.')); }, 10000);
     window[callbackName] = (result) => { clearTimeout(timeout); cleanup(); resolve(result); };
-    script.onerror = () => { clearTimeout(timeout); cleanup(); reject(new Error('No se pudo conectar con Google Sheets.')); };
-    script.src = `${sheetUrl}?${query}&callback=${callbackName}`;
+    script.onerror = () => { clearTimeout(timeout); cleanup(); reject(new Error('No se pudo conectar con Google Sheets. Verifica que la URL termine en /exec, que el acceso sea "Cualquier usuario" y que la implementación esté actualizada.')); };
+    script.src = `${endpoint}?${query}${query ? '&' : ''}callback=${callbackName}`;
     document.head.appendChild(script);
   });
 }

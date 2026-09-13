@@ -58,7 +58,15 @@ Antes de usar el formulario, pega la URL (termina en `/exec`) en una pestaña nu
 ## Paso 5 — Pega la URL en el formulario HTML
 1. Abre tu página de GitHub Pages desde `index.html` (por ejemplo, `https://tu-usuario.github.io/huntech-comprobantes/`)
 2. Pega la URL en el campo de configuración de arriba
-3. Listo
+3. Pulsa **Guardar** y después **Probar conexión**. Debe aparecer "Conexión correcta con Google Sheets."
+4. Listo
+
+### Si aparece "No se pudo conectar"
+
+- Confirma que pegaste la URL de la aplicación web que termina exactamente en `/exec`, no la URL del editor de Apps Script.
+- En la implementación, configura **Ejecutar como: Yo** y **Quién tiene acceso: Cualquier usuario**.
+- Después de modificar el código, usa **Implementar > Administrar implementaciones > Editar > Nueva versión > Implementar**.
+- Borra la URL guardada y vuelve a pegarla si pertenece a otra hoja o a otra implementación.
 
 ---
 
