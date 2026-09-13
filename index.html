@@ -10,6 +10,8 @@
 <body>
   <main class="page-shell">
     <section class="login-panel" id="loginPanel">
+      <div class="login-orbit login-orbit-one" aria-hidden="true"></div>
+      <div class="login-orbit login-orbit-two" aria-hidden="true"></div>
       <div class="login-brand">
         <img class="brand-logo" src="assets/logo-huntech.png" alt="Huntech">
         <div class="brand-copy">
@@ -18,11 +20,12 @@
         </div>
       </div>
       <h1>Comprobantes</h1>
+      <p class="login-copy">Gestiona cada servicio desde la recepción hasta la entrega, en un solo lugar.</p>
       <form id="loginForm" class="login-form">
         <label for="loginUser">Usuario</label>
         <input id="loginUser" name="username" autocomplete="username" required placeholder="tecnico o administrador">
         <label for="loginPassword">Contraseña</label>
-        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        <div class="password-field"><input id="loginPassword" name="password" type="password" autocomplete="current-password" required><button type="button" class="password-toggle" id="passwordToggle" aria-label="Mostrar contraseña">Mostrar</button></div>
         <button type="submit" class="primary-button">Iniciar sesión</button>
         <p class="error" id="loginError" role="alert" hidden>Usuario o contraseña incorrectos.</p>
       </form>
@@ -94,9 +97,10 @@
 
       <section class="tab-content" id="tab-entregar" hidden>
         <div class="card">
-          <label for="e-folio">Folio del ticket *</label>
-          <div class="search-row"><input id="e-folio" placeholder="Ej: 260825-143210"><button type="button" class="primary-button" id="searchButton">Buscar</button></div>
-          <p class="error" id="err-e-folio" hidden>No se encontró ese folio.</p>
+          <label for="e-folio">Buscar cliente, teléfono o folio *</label>
+          <div class="search-row"><input id="e-folio" placeholder="Ej: Ana López, 5512345678 o 260825-143210"><button type="button" class="primary-button" id="searchButton">Buscar</button></div>
+          <p class="hint">Escribe cualquier dato del ticket para localizarlo en Google Sheets.</p>
+          <p class="error" id="err-e-folio" hidden>No se encontró un ticket con ese dato.</p>
           <div id="e-datos"></div>
           <button type="button" class="primary-button" id="btnEntregar" hidden>Marcar como entregado</button>
           <p class="success" id="ok-entregado" hidden></p>

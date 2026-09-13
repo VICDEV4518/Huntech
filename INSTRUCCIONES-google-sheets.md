@@ -100,7 +100,7 @@ function doGet(e) {
   }
 
   if (action === "get") {
-    var row = findRow(sheet, params.folio);
+    var row = findRow(sheet, params.query || params.folio);
     if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
     var values = sheet.getRange(row, 1, 1, 15).getValues()[0];
     var headers = sheet.getRange(1, 1, 1, 15).getValues()[0];
@@ -112,12 +112,19 @@ function doGet(e) {
   return respond({ success: false, error: "Accion no reconocida" }, callback);
 }
 
-function findRow(sheet, folio) {
+function findRow(sheet, query) {
   var values = sheet.getDataRange().getValues();
+  var search = normalize(query);
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]) === String(folio)) return i + 1;
+    if ([values[i][0], values[i][2], values[i][3]].some(function(value) {
+      return normalize(value).indexOf(search) !== -1;
+    })) return i + 1;
   }
   return null;
+}
+
+function normalize(value) {
+  return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
 function respond(obj, callback) {
