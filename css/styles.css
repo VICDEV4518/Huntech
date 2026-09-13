@@ -9,8 +9,10 @@ button { cursor:pointer; }
 [hidden] { display:none !important; }
 .page-shell { width:min(100% - 32px, 820px); margin:0 auto; padding:56px 0 40px; }
 .login-panel { width:min(100%, 440px); margin:8vh auto 0; padding:38px; background:var(--paper); border:1px solid var(--line); box-shadow:0 18px 50px rgba(31,44,34,.08); }
-.login-brand { display:flex; align-items:center; justify-content:center; margin:-4px 0 14px; }
-.brand-logo { display:block; width:176px; height:176px; }
+.login-brand { display:flex; align-items:center; justify-content:center; gap:14px; margin:-4px 0 20px; }
+.brand-logo { display:block; width:72px; height:72px; }
+.brand-copy strong { display:block; font-family:'Space Grotesk',sans-serif; font-size:25px; line-height:1; }
+.brand-copy .eyebrow { margin:6px 0 0; }
 .eyebrow,.section-label { color:var(--orange); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
 .eyebrow { margin:18px 0 7px; }
 h1 { margin:0; font-family:'Space Grotesk',sans-serif; font-size:clamp(25px,5vw,34px); line-height:1.05; }
