@@ -100,10 +100,14 @@
         <div class="card">
           <label for="e-folio">Buscar cliente, teléfono o folio *</label>
           <div class="search-row"><input id="e-folio" placeholder="Ej: Ana López, 5512345678 o 260825-143210"><button type="button" class="primary-button" id="searchButton">Buscar</button></div>
+          <div class="delivery-filter" role="group" aria-label="Filtrar tickets por entrega">
+            <button type="button" class="filter-button active" data-delivery-filter="pendientes">Pendientes</button>
+            <button type="button" class="filter-button" data-delivery-filter="entregados">Entregados</button>
+            <button type="button" class="filter-button" data-delivery-filter="todos">Todos</button>
+          </div>
           <p class="hint">Escribe cualquier dato del ticket para localizarlo en Google Sheets.</p>
           <p class="error" id="err-e-folio" hidden>No se encontró un ticket con ese dato.</p>
           <div id="e-datos"></div>
-          <button type="button" class="primary-button" id="btnEntregar" hidden>Marcar como entregado</button>
           <p class="success" id="ok-entregado" hidden></p>
         </div>
       </section>

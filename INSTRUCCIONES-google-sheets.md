@@ -108,27 +108,36 @@ function doGet(e) {
   }
 
   if (action === "get") {
-    var row = findRow(sheet, params.query || params.folio);
-    if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
-    var values = sheet.getRange(row, 1, 1, 15).getValues()[0];
+    var rows = findRows(sheet, params.query || params.folio);
+    if (!rows.length) return respond({ success: false, error: "Folio no encontrado" }, callback);
     var headers = sheet.getRange(1, 1, 1, 15).getValues()[0];
-    var obj = {};
-    headers.forEach(function(h, i) { obj[h] = values[i]; });
-    return respond({ success: true, data: obj }, callback);
+    var data = rows.map(function(row) {
+      var values = sheet.getRange(row, 1, 1, 15).getValues()[0];
+      var obj = {};
+      headers.forEach(function(h, i) { obj[h] = values[i]; });
+      return obj;
+    });
+    return respond({ success: true, data: data }, callback);
   }
 
   return respond({ success: false, error: "Accion no reconocida" }, callback);
 }
 
-function findRow(sheet, query) {
+function findRows(sheet, query) {
   var values = sheet.getDataRange().getValues();
   var search = normalize(query);
+  var rows = [];
   for (var i = 1; i < values.length; i++) {
     if ([values[i][0], values[i][2], values[i][3]].some(function(value) {
       return normalize(value).indexOf(search) !== -1;
-    })) return i + 1;
+    })) rows.push(i + 1);
   }
-  return null;
+  return rows;
+}
+
+function findRow(sheet, query) {
+  var rows = findRows(sheet, query);
+  return rows.length ? rows[0] : null;
 }
 
 function normalize(value) {
