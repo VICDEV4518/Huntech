@@ -10,10 +10,11 @@
 <body>
   <main class="page-shell">
     <section class="login-panel" id="loginPanel">
-      <div class="brand-mark">HT</div>
-      <p class="eyebrow">Huntech servicio técnico</p>
+      <div class="login-brand">
+        <img class="brand-logo" src="assets/logo-huntech.svg" alt="Huntech">
+      </div>
+      <p class="eyebrow">Servicio técnico</p>
       <h1>Comprobantes de servicio</h1>
-      <p class="login-copy">Ingresa con tu cuenta para gestionar equipos, servicios y entregas.</p>
       <form id="loginForm" class="login-form">
         <label for="loginUser">Usuario</label>
         <input id="loginUser" name="username" autocomplete="username" required placeholder="tecnico o administrador">
@@ -82,6 +83,7 @@
           <label for="r-anticipo">Anticipo</label>
           <input id="r-anticipo" type="number" min="0" step="0.01" placeholder="0.00">
           <button type="submit" class="primary-button" id="btnCrear">Generar comprobante</button>
+          <button type="button" class="secondary-button full-button clear-button" id="clearFormButton" hidden>Limpiar formulario</button>
           <p class="error" id="err-r-conexion" hidden>El administrador debe configurar Google Sheets antes de continuar.</p>
         </form>
         <div id="r-preview"></div>

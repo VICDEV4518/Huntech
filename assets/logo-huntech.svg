@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 440" role="img" aria-labelledby="title desc">
+  <title id="title">Huntech</title>
+  <desc id="desc">Logotipo Huntech naranja sobre fondo negro</desc>
+  <rect width="440" height="440" fill="#000"/>
+  <g fill="none" stroke="#ff641f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M220 58a126 126 0 0 1 112 184"/>
+    <path d="M108 242A126 126 0 0 1 220 58"/>
+    <path d="M139 242a92 92 0 0 1 162-92"/>
+    <path d="M301 150a92 92 0 0 1-162 92"/>
+    <path d="M220 58v84M220 200l-83 48M220 200l83 48"/>
+  </g>
+  <g fill="#000" stroke="#ff641f" stroke-width="10">
+    <circle cx="220" cy="58" r="17"/>
+    <circle cx="220" cy="184" r="29"/>
+    <circle cx="121" cy="255" r="17"/>
+    <circle cx="319" cy="255" r="17"/>
+  </g>
+  <text x="220" y="367" fill="#ff641f" font-family="Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="2" text-anchor="middle">HUNTECH</text>
+</svg>

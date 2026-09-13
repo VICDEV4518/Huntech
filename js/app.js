@@ -18,6 +18,7 @@ function init() {
   document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => cambiarTab(tab.dataset.tab)));
   $('saveUrlButton').addEventListener('click', guardarUrl);
   $('addConceptButton').addEventListener('click', () => agregarConcepto());
+  $('clearFormButton').addEventListener('click', limpiarFormulario);
   $('ticketForm').addEventListener('submit', (event) => { event.preventDefault(); crearTicket(); });
   $('searchButton').addEventListener('click', () => buscarTicket('e'));
   $('btnEntregar').addEventListener('click', marcarEntregado);
@@ -50,7 +51,19 @@ function initConfig() { $('sheetUrl').value = sheetUrl; updateConfigStatus(); }
 function updateConfigStatus() { $('configStatus').textContent = sheetUrl ? 'Conectado a Google Sheets.' : 'Configura Google Sheets para guardar los tickets.'; $('configBox').classList.toggle('connected', Boolean(sheetUrl)); }
 function guardarUrl() { sheetUrl = $('sheetUrl').value.trim(); localStorage.setItem('huntech-sheet-url', sheetUrl); updateConfigStatus(); }
 function cambiarTab(name) { document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === name)); document.querySelectorAll('.tab-content').forEach((tab) => { tab.hidden = !tab.id.endsWith(name); tab.classList.toggle('active', tab.id.endsWith(name)); }); }
-async function callSheet(payload) { const query = Object.keys(payload).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(payload[key])}`).join('&'); const response = await fetch(`${sheetUrl}?${query}`); return response.json(); }
+function callSheet(payload) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `huntechCallback${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    const query = Object.keys(payload).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(payload[key])}`).join('&');
+    const script = document.createElement('script');
+    const cleanup = () => { delete window[callbackName]; script.remove(); };
+    const timeout = setTimeout(() => { cleanup(); reject(new Error('No hubo respuesta de Google Sheets. Verifica la URL y el despliegue.')); }, 10000);
+    window[callbackName] = (result) => { clearTimeout(timeout); cleanup(); resolve(result); };
+    script.onerror = () => { clearTimeout(timeout); cleanup(); reject(new Error('No se pudo conectar con Google Sheets.')); };
+    script.src = `${sheetUrl}?${query}&callback=${callbackName}`;
+    document.head.appendChild(script);
+  });
+}
 
 function agregarConcepto(desc = '', monto = '') { const row = document.createElement('div'); row.className = 'concepto-row'; row.innerHTML = `<input type="text" class="concepto-desc" placeholder="Ej: Diagnóstico" value="${escapeHtml(desc)}"><input type="number" min="0" step="0.01" class="concepto-monto" placeholder="0.00" value="${monto}" aria-label="Monto del concepto"><button type="button" class="remove-btn" aria-label="Quitar concepto">×</button>`; row.querySelector('.concepto-monto').addEventListener('input', actualizarTotal); row.querySelector('.remove-btn').addEventListener('click', () => { row.remove(); actualizarTotal(); }); $('conceptosList').appendChild(row); actualizarTotal(); }
 function getConceptos() { return [...document.querySelectorAll('.concepto-row')].map((row) => ({ desc: row.querySelector('.concepto-desc').value.trim(), monto: parseFloat(row.querySelector('.concepto-monto').value) || 0 })).filter((item) => item.desc && item.monto > 0); }
@@ -62,7 +75,21 @@ async function crearTicket() {
   if (!cliente || !conceptos.length || !sheetUrl) return;
   const monto = conceptos.reduce((total, item) => total + item.monto, 0); const anticipo = parseFloat($('r-anticipo').value) || 0; const data = { action:'create', fecha:new Date().toLocaleDateString('es-MX'), cliente, telefono:$('r-telefono').value.trim(), tipo:$('r-tipo').value, marca:$('r-marca').value.trim(), modelo:$('r-modelo').value.trim(), enciende:$('r-enciende').value, falla:$('r-falla').value.trim(), conceptosText:conceptos.map((item) => `${item.desc}: ${fmt(item.monto)}`).join(' | '), monto, anticipo };
   $('btnCrear').disabled = true; $('btnCrear').textContent = 'Guardando...';
-  try { const result = await callSheet(data); if (!result.success) throw new Error(result.error || 'No se pudo guardar'); currentFolio = result.folio; currentTicketData = { ...data, folio:result.folio, conceptos }; renderPreview(currentTicketData); } catch (error) { alert(`No se pudo guardar: ${error.message}`); } finally { $('btnCrear').disabled = false; $('btnCrear').textContent = 'Generar comprobante'; }
+  try { const result = await callSheet(data); if (!result.success) throw new Error(result.error || 'No se pudo guardar'); currentFolio = result.folio; currentTicketData = { ...data, folio:result.folio, conceptos }; renderPreview(currentTicketData); $('clearFormButton').hidden = false; } catch (error) { alert(`No se pudo guardar: ${error.message}`); } finally { $('btnCrear').disabled = false; $('btnCrear').textContent = 'Generar comprobante'; }
+}
+
+function limpiarFormulario() {
+  $('ticketForm').reset();
+  $('conceptosList').innerHTML = '';
+  $('r-preview').innerHTML = '';
+  $('clearFormButton').hidden = true;
+  $('err-r-cliente').hidden = true;
+  $('err-r-concepto').hidden = true;
+  $('err-r-conexion').hidden = true;
+  currentFolio = null;
+  currentTicketData = null;
+  agregarConcepto();
+  $('r-cliente').focus();
 }
 
 function renderPreview(ticket) { const saldo = ticket.monto - ticket.anticipo; $('r-preview').innerHTML = `<div class="ticket-outer"><div class="ticket-header"><h2>HUNTECH</h2><div class="sub2">Comprobante de servicio</div></div><div class="ticket-body"><div class="folio-display"><strong>Folio: ${escapeHtml(ticket.folio)}</strong><br>Guarda este folio para dar seguimiento</div><div class="t-row"><span class="t-label">Fecha</span><span>${escapeHtml(ticket.fecha)}</span></div><div class="t-row"><span class="t-label">Cliente</span><span>${escapeHtml(ticket.cliente)}</span></div><div class="t-row"><span class="t-label">Equipo</span><span>${escapeHtml(`${ticket.tipo} ${ticket.marca} ${ticket.modelo}`)}</span></div><div class="t-section">Servicio</div>${ticket.conceptos.map((item) => `<div class="t-row"><span>${escapeHtml(item.desc)}</span><span>${fmt(item.monto)}</span></div>`).join('')}<div class="totales"><div class="t-row"><span>Monto total</span><span>${fmt(ticket.monto)}</span></div><div class="t-row"><span>Anticipo</span><span>${fmt(ticket.anticipo)}</span></div><div class="t-row saldo"><span>Saldo pendiente</span><span>${fmt(saldo)}</span></div></div><hr><div class="footer-note">Gracias por su preferencia.</div></div></div><div class="download-wrap"><button type="button" class="primary-button" id="downloadButton">Descargar comprobante PDF</button></div>`; $('downloadButton').addEventListener('click', () => descargarPDF(currentTicketData)); }

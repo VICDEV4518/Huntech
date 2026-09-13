@@ -38,7 +38,7 @@ Folio | Fecha recibido | Cliente | Telefono | Tipo de equipo | Marca | Modelo | 
 3. Pega exactamente el código de la sección "CÓDIGO" (más abajo)
 4. Guarda (Ctrl+S). Ponle un nombre al proyecto, ej. "Huntech Tickets"
 
-**IMPORTANTE:** esta versión usa peticiones **GET** en vez de POST. Los navegadores a veces bloquean las peticiones POST a Apps Script por un problema de Google con la redirección interna, aunque todo esté bien configurado. Usar GET evita ese problema.
+**IMPORTANTE:** esta versión usa peticiones **GET con JSONP**. Esto evita el bloqueo CORS que puede ocurrir cuando GitHub Pages intenta leer directamente la respuesta de Apps Script.
 
 ## Paso 3 — Publica el script como aplicación web
 1. Botón azul **Implementar > Nueva implementación**
@@ -50,13 +50,13 @@ Folio | Fecha recibido | Cliente | Telefono | Tipo de equipo | Marca | Modelo | 
 5. Autoriza los permisos cuando te lo pida
 6. Copia la **URL de la aplicación web** (termina en `/exec`)
 
-**Si ya tenías una implementación anterior:** no basta con guardar el código nuevo. Debes ir a Implementar > Administrar implementaciones > icono de lápiz (editar) > en "Versión" elige "Nueva versión" > Implementar. La URL se mantiene igual.
+**Si ya tenías una implementación anterior:** no basta con guardar el código nuevo. Debes ir a Implementar > Administrar implementaciones > icono de lápiz (editar) > en "Versión" elige "Nueva versión" > Implementar. La URL se mantiene igual. Es necesario actualizar la implementación después de pegar el código de abajo.
 
 ## Paso 4 — Prueba la URL directo
 Antes de usar el formulario, pega la URL (termina en `/exec`) en una pestaña nueva del navegador. Debe mostrarte algo como `{"status":"ok"}`. Si en cambio pide iniciar sesión o da error, el problema está en la implementación, no en el HTML.
 
 ## Paso 5 — Pega la URL en el formulario HTML
-1. Abre `huntech-comprobantes.html` (recuerda: por `http://localhost:8000/...`, no con doble clic)
+1. Abre tu página de GitHub Pages desde `index.html` (por ejemplo, `https://tu-usuario.github.io/huntech-comprobantes/`)
 2. Pega la URL en el campo de configuración de arriba
 3. Listo
 
@@ -64,14 +64,17 @@ Antes de usar el formulario, pega la URL (termina en `/exec`) en una pestaña nu
 
 ## CÓDIGO (pegar en Apps Script)
 
+Pega únicamente el código que está entre las líneas de apertura y cierre. **No copies** la palabra `javascript` de la primera línea ni los caracteres de las comillas invertidas. La primera línea dentro del editor debe ser exactamente `function doGet(e) {`.
+
 ```javascript
 function doGet(e) {
   var params = e.parameter;
   var action = params.action;
+  var callback = params.callback;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tickets");
 
   if (!action) {
-    return respond({ status: "ok" });
+    return respond({ status: "ok" }, callback);
   }
 
   if (action === "create") {
@@ -85,28 +88,28 @@ function doGet(e) {
       params.conceptosText, monto, anticipo, saldo,
       "No", ""
     ]);
-    return respond({ success: true, folio: folio });
+    return respond({ success: true, folio: folio }, callback);
   }
 
   if (action === "deliver") {
     var row = findRow(sheet, params.folio);
-    if (!row) return respond({ success: false, error: "Folio no encontrado" });
+    if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
     sheet.getRange(row, 14).setValue("Si");
     sheet.getRange(row, 15).setValue(params.fechaEntrega);
-    return respond({ success: true });
+    return respond({ success: true }, callback);
   }
 
   if (action === "get") {
     var row = findRow(sheet, params.folio);
-    if (!row) return respond({ success: false, error: "Folio no encontrado" });
+    if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
     var values = sheet.getRange(row, 1, 1, 15).getValues()[0];
     var headers = sheet.getRange(1, 1, 1, 15).getValues()[0];
     var obj = {};
     headers.forEach(function(h, i) { obj[h] = values[i]; });
-    return respond({ success: true, data: obj });
+    return respond({ success: true, data: obj }, callback);
   }
 
-  return respond({ success: false, error: "Accion no reconocida" });
+  return respond({ success: false, error: "Accion no reconocida" }, callback);
 }
 
 function findRow(sheet, folio) {
@@ -117,8 +120,13 @@ function findRow(sheet, folio) {
   return null;
 }
 
-function respond(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
+function respond(obj, callback) {
+  var json = JSON.stringify(obj);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }
 ```
