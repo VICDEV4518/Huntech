@@ -46,8 +46,8 @@ function showApp(username) {
   $('loginPanel').hidden = true;
   $('appShell').hidden = false;
   $('userBadge').textContent = USERS[username].label;
-  $('configBox').hidden = !USERS[username].canConfigure;
-  if (USERS[username].canConfigure) initConfig();
+  $('configBox').hidden = false;
+  initConfig();
 }
 
 function logout() { sessionStorage.removeItem('huntech-user'); currentUser = null; $('appShell').hidden = true; $('loginPanel').hidden = false; $('loginForm').reset(); }
