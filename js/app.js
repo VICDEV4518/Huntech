@@ -340,6 +340,7 @@ async function guardarCambiosTicket() {
     renderPreview(currentTicketData);
     renderDeliveryResults();
     $('ok-entregado').hidden = true;
+    $('clearFormButton').hidden = false;
     $('btnCrear').dataset.editFolio = '';
     $('btnCrear').dataset.mode = '';
     $('btnCrear').textContent = 'Generar comprobante';
