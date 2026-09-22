@@ -70,6 +70,8 @@ textarea { min-height:74px; resize:vertical; }
 .filter-button { flex:1; border:1px solid var(--line); border-radius:4px; padding:9px 8px; color:var(--muted); background:#fff; font-size:12px; font-weight:700; }
 .filter-button.active { color:#fff; background:var(--ink); border-color:var(--ink); }
 .delivery-result + .delivery-result { margin-top:10px; }
+.delivery-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.delivery-actions button { flex:1 1 140px; }
 .deliver-result-button { width:100%; margin-top:8px; }
 .folio-display { margin-top:14px; padding:12px; border-radius:4px; background:#f5f7f4; line-height:1.7; font-size:13px; }
 .folio-display strong { color:var(--orange); }

@@ -104,6 +104,27 @@ function doGet(e) {
     if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
     sheet.getRange(row, 14).setValue("Si");
     sheet.getRange(row, 15).setValue(params.fechaEntrega);
+    sheet.getRange(row, 13).setValue(0);
+    return respond({ success: true }, callback);
+  }
+
+  if (action === "update") {
+    var row = findRow(sheet, params.folio);
+    if (!row) return respond({ success: false, error: "Folio no encontrado" }, callback);
+    sheet.getRange(row, 2).setValue(params.fecha || sheet.getRange(row, 2).getValue());
+    sheet.getRange(row, 3).setValue(params.cliente || sheet.getRange(row, 3).getValue());
+    sheet.getRange(row, 4).setValue(params.telefono || sheet.getRange(row, 4).getValue());
+    sheet.getRange(row, 5).setValue(params.tipo || sheet.getRange(row, 5).getValue());
+    sheet.getRange(row, 6).setValue(params.marca || sheet.getRange(row, 6).getValue());
+    sheet.getRange(row, 7).setValue(params.modelo || sheet.getRange(row, 7).getValue());
+    sheet.getRange(row, 8).setValue(params.enciende || sheet.getRange(row, 8).getValue());
+    sheet.getRange(row, 9).setValue(params.falla || sheet.getRange(row, 9).getValue());
+    sheet.getRange(row, 10).setValue(params.conceptosText || sheet.getRange(row, 10).getValue());
+    sheet.getRange(row, 11).setValue(parseFloat(params.monto) || 0);
+    sheet.getRange(row, 12).setValue(parseFloat(params.anticipo) || 0);
+    sheet.getRange(row, 13).setValue((parseFloat(params.monto) || 0) - (parseFloat(params.anticipo) || 0));
+    sheet.getRange(row, 14).setValue(params.entregado || "No");
+    if (params.fechaEntrega) sheet.getRange(row, 15).setValue(params.fechaEntrega);
     return respond({ success: true }, callback);
   }
 
