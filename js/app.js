@@ -489,7 +489,16 @@ async function marcarEntregado(folio) {
   }
 }
 
-function descargarPDF(ticket) {
+async function loadImageFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('No se pudo cargar el logo del ticket.'));
+    img.src = url;
+  });
+}
+
+async function descargarPDF(ticket) {
   const { jsPDF } = window.jspdf;
   const width = 100;
   const height = 130 + Math.max(0, (ticket.conceptos || []).length - 1) * 5;
@@ -501,15 +510,31 @@ function descargarPDF(ticket) {
   const saldo = Number(ticket.saldo ?? Math.max(monto - anticipo, 0));
   const saldoLabel = getTicketBalanceLabel({ ...ticket, saldo, entregado: Boolean(ticket.entregado) });
 
+  let logoImage = null;
+  try {
+    logoImage = await loadImageFromUrl('assets/logo-huntech.png');
+  } catch (error) {
+    console.warn(error.message);
+  }
+
   doc.setFillColor(...orange);
   doc.rect(0, 0, width, 22, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('HUNTECH', width / 2, 10, { align: 'center' });
+  if (logoImage) {
+    doc.addImage(logoImage, 'PNG', 8, 5, 12, 12);
+    doc.text('HUNTECH', 24, 10);
+  } else {
+    doc.text('HUNTECH', width / 2, 10, { align: 'center' });
+  }
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
-  doc.text('Comprobante de servicio', width / 2, 16, { align: 'center' });
+  if (logoImage) {
+    doc.text('Comprobante de servicio', 24, 16);
+  } else {
+    doc.text('Comprobante de servicio', width / 2, 16, { align: 'center' });
+  }
 
   let y = 30;
   doc.setTextColor(...orange);
