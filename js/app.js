@@ -35,6 +35,10 @@ function init() {
   document.querySelectorAll('[data-delivery-filter]').forEach((button) => button.addEventListener('click', () => {
     deliveryFilter = button.dataset.deliveryFilter;
     document.querySelectorAll('[data-delivery-filter]').forEach((item) => item.classList.toggle('active', item === button));
+    if ($('e-folio').value.trim() === '') {
+      buscarTicket('e');
+      return;
+    }
     renderDeliveryResults();
   }));
   const savedUser = sessionStorage.getItem('huntech-user');
@@ -399,14 +403,17 @@ function llenarFormularioDesdeTicket(ticket) {
 async function buscarTicket(prefix) {
   const query = $(`${prefix}-folio`).value.trim();
   $(`err-${prefix}-folio`).hidden = true;
-  if (!query || !sheetUrl) return;
+  if (!sheetUrl) return;
+
   try {
     const result = await callSheet({ action: 'get', query });
     if (!result.success) throw new Error('No se encontraron tickets con ese dato');
     deliveryResults = result.data || [];
     renderDeliveryResults();
   } catch (error) {
-    $(`err-${prefix}-folio`).hidden = false;
+    if (query) {
+      $(`err-${prefix}-folio`).hidden = false;
+    }
     $(`${prefix}-datos`).innerHTML = '';
     deliveryResults = [];
   }
