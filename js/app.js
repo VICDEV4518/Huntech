@@ -35,11 +35,7 @@ function init() {
   document.querySelectorAll('[data-delivery-filter]').forEach((button) => button.addEventListener('click', () => {
     deliveryFilter = button.dataset.deliveryFilter;
     document.querySelectorAll('[data-delivery-filter]').forEach((item) => item.classList.toggle('active', item === button));
-    if ($('e-folio').value.trim() === '') {
-      buscarTicket('e');
-      return;
-    }
-    renderDeliveryResults();
+    void buscarTicket('e');
   }));
   const savedUser = sessionStorage.getItem('huntech-user');
   if (savedUser && USERS[savedUser]) showApp(savedUser);
@@ -136,6 +132,10 @@ function cambiarTab(name) {
     tab.hidden = !tab.id.endsWith(name);
     tab.classList.toggle('active', tab.id.endsWith(name));
   });
+
+  if (name === 'entregar' && sheetUrl) {
+    void buscarTicket('e');
+  }
 }
 
 function callSheet(payload) {
