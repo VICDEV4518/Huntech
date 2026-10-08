@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-season="halloween">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="css/tarjeta.css">
 </head>
 <body>
-  <main class="contact-card">
+  <main class="contact-card" id="contactCard" data-season="halloween">
     <header class="brand-panel">
+      <div class="season-ornament" id="seasonOrnament" aria-hidden="true">🦇 <span>✦</span> 🎃</div>
       <div class="brand-mark">
         <img src="assets/logo-huntech.png" alt="Logo de Huntech">
         <div>
@@ -19,6 +20,10 @@
         </div>
       </div>
       <p class="services">Mantenimiento y servicios <span>·</span> Computadoras personalizadas <span>·</span> Cámaras de seguridad</p>
+      <div class="season-picker" role="group" aria-label="Tema de temporada">
+        <button class="season-button" type="button" data-season-choice="halloween" aria-pressed="true">Halloween</button>
+        <button class="season-button" type="button" data-season-choice="muertos" aria-pressed="false">Día de Muertos</button>
+      </div>
     </header>
 
     <section class="person" aria-labelledby="person-name">
@@ -57,5 +62,6 @@
       <a href="https://facebook.com/huntechtap" target="_blank" rel="noopener noreferrer">Facebook</a>
     </footer>
   </main>
+  <script src="js/efectos-temporada.js"></script>
 </body>
 </html>
