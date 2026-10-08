@@ -2,117 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Huntech | Comprobantes de servicio</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111211">
+  <meta name="description" content="Huntech en Tapachula, Chiapas. Mantenimiento, computadoras personalizadas y cámaras de seguridad.">
+  <title>Huntech | Verdadera potencia</title>
+  <link rel="stylesheet" href="css/tarjeta.css">
 </head>
 <body>
-  <main class="page-shell">
-    <section class="login-panel" id="loginPanel">
-      <div class="login-orbit login-orbit-one" aria-hidden="true"></div>
-      <div class="login-orbit login-orbit-two" aria-hidden="true"></div>
-      <div class="login-brand">
-        <img class="brand-logo" src="assets/logo-huntech.png" alt="Huntech">
-        <div class="brand-copy">
-          <strong>Huntech</strong>
-          <p class="eyebrow">Servicio técnico</p>
+  <main class="contact-card">
+    <header class="brand-panel">
+      <div class="brand-mark">
+        <img src="assets/logo-huntech.png" alt="Logo de Huntech">
+        <div>
+          <p class="brand-name">HUNTECH</p>
+          <p class="tagline">Verdadera potencia</p>
         </div>
       </div>
-      <h1>Comprobantes</h1>
-      <p class="login-copy">Gestiona cada servicio desde la recepción hasta la entrega, en un solo lugar.</p>
-      <form id="loginForm" class="login-form">
-        <label for="loginUser">Usuario</label>
-        <input id="loginUser" name="username" autocomplete="username" required placeholder="tecnico o administrador">
-        <label for="loginPassword">Contraseña</label>
-        <div class="password-field"><input id="loginPassword" name="password" type="password" autocomplete="current-password" required><button type="button" class="password-toggle" id="passwordToggle" aria-label="Mostrar contraseña">Mostrar</button></div>
-        <button type="submit" class="primary-button">Iniciar sesión</button>
-        <p class="error" id="loginError" role="alert" hidden>Usuario o contraseña incorrectos.</p>
-      </form>
+      <p class="services">Mantenimiento y servicios <span>·</span> Computadoras personalizadas <span>·</span> Cámaras de seguridad</p>
+    </header>
+
+    <section class="person" aria-labelledby="person-name">
+      <p class="eyebrow">Atención</p>
+      <h1 id="person-name">Ing. Miguel Rasgado Morales</h1>
+      <p class="role">Gerente</p>
     </section>
 
-    <section class="app-shell" id="appShell" hidden>
-      <header class="app-header">
-        <div>
-          <p class="eyebrow">Huntech servicio técnico</p>
-          <h1>Comprobantes de servicio</h1>
-          <p class="subtitle">Recibir y cotizar <span aria-hidden="true">→</span> entregar</p>
-        </div>
-        <div class="user-area">
-          <span class="user-badge" id="userBadge"></span>
-          <button type="button" class="text-button" id="logoutButton">Cerrar sesión</button>
-        </div>
-      </header>
+    <nav class="actions" aria-label="Contacto">
+      <a class="action whatsapp" href="https://wa.me/529622889345" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a class="action" href="tel:+529623114351">Llamar</a>
+      <a class="action save-contact" href="assets/huntech-contacto.vcf" download="Huntech-Miguel-Rasgado.vcf">Guardar contacto</a>
+    </nav>
 
-      <section class="config-box" id="configBox">
-        <div>
-          <strong>Conexión de datos</strong>
-          <span id="configStatus">Configura Google Sheets para guardar los tickets.</span>
-        </div>
-        <div class="config-row">
-          <input id="sheetUrl" type="url" placeholder="URL de la aplicación web de Apps Script">
-          <button type="button" class="secondary-button" id="saveUrlButton">Guardar</button>
-          <button type="button" class="secondary-button" id="testUrlButton">Probar conexión</button>
-        </div>
-      </section>
-
-      <nav class="tabs" aria-label="Operaciones">
-        <button type="button" class="tab active" data-tab="recibir">1. Recibir y cotizar</button>
-        <button type="button" class="tab" data-tab="entregar">2. Entregar</button>
-      </nav>
-
-      <section class="tab-content active" id="tab-recibir">
-        <form class="card" id="ticketForm">
-          <p class="section-label">Datos del cliente</p>
-          <label for="r-cliente">Nombre del cliente *</label>
-          <input id="r-cliente" required placeholder="Nombre completo">
-          <p class="error" id="err-r-cliente" hidden>Ingresa el nombre del cliente.</p>
-          <label for="r-telefono">Teléfono</label>
-          <input id="r-telefono" type="tel" placeholder="Opcional">
-
-          <p class="section-label">Equipo</p>
-          <div class="form-grid">
-            <div><label for="r-tipo">Tipo de equipo</label><select id="r-tipo"><option>Laptop</option><option>PC de escritorio</option><option>Impresora</option><option>Consola</option></select></div>
-            <div><label for="r-enciende">Enciende</label><select id="r-enciende"><option>Si</option><option>No</option></select></div>
-            <div><label for="r-marca">Marca</label><input id="r-marca" placeholder="Ej: HP"></div>
-            <div><label for="r-modelo">Modelo</label><input id="r-modelo" placeholder="Ej: Pavilion 15"></div>
-          </div>
-          <label for="r-falla">Falla reportada</label>
-          <textarea id="r-falla" placeholder="Qué reporta el cliente"></textarea>
-          <p class="hint">Se guarda en Google Sheets y no aparece en el comprobante del cliente.</p>
-
-          <p class="section-label">Servicio</p>
-          <label>Conceptos del servicio *</label>
-          <div id="conceptosList"></div>
-          <button type="button" class="secondary-button full-button" id="addConceptButton">+ Agregar concepto</button>
-          <p class="error" id="err-r-concepto" hidden>Agrega al menos un concepto con monto.</p>
-          <div class="total-line"><span>Monto total</span><strong id="montoTotalDisplay">$0.00</strong></div>
-          <label for="r-anticipo">Anticipo</label>
-          <input id="r-anticipo" type="number" min="0" step="0.01" placeholder="0.00">
-          <button type="submit" class="primary-button" id="btnCrear">Generar comprobante</button>
-          <button type="button" class="secondary-button full-button clear-button" id="clearFormButton" hidden>Limpiar formulario</button>
-          <p class="error" id="err-r-conexion" hidden>El administrador debe configurar Google Sheets antes de continuar.</p>
-        </form>
-        <div id="r-preview"></div>
-      </section>
-
-      <section class="tab-content" id="tab-entregar" hidden>
-        <div class="card">
-          <label for="e-folio">Buscar cliente, teléfono o folio *</label>
-          <div class="search-row"><input id="e-folio" placeholder="Ej: Ana López, 5512345678 o 260825-143210"><button type="button" class="primary-button" id="searchButton">Buscar</button></div>
-          <div class="delivery-filter" role="group" aria-label="Filtrar tickets por entrega">
-            <button type="button" class="filter-button active" data-delivery-filter="pendientes">Pendientes</button>
-            <button type="button" class="filter-button" data-delivery-filter="entregados">Entregados</button>
-            <button type="button" class="filter-button" data-delivery-filter="todos">Todos</button>
-          </div>
-          <p class="hint">Escribe cualquier dato del ticket para localizarlo en Google Sheets.</p>
-          <p class="error" id="err-e-folio" hidden>No se encontró un ticket con ese dato.</p>
-          <div id="e-datos"></div>
-          <p class="success" id="ok-entregado" hidden></p>
-        </div>
-      </section>
+    <section class="details" aria-label="Información del local">
+      <div class="detail-row">
+        <span class="detail-label">Visítanos</span>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=8a+Poniente+4-B+entre+Central+y+2a+Sur+Tapachula+Chiapas" target="_blank" rel="noopener noreferrer">8a Poniente #4-B, entre Central y 2a Sur<br>Tapachula, Chiapas, México</a>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Horario</span>
+        <p>Lunes a viernes <span>9:00 am–5:00 pm</span><br>Sábado <span>9:00 am–2:00 pm</span></p>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Correo</span>
+        <a href="mailto:miguel.huntech@gmail.com">miguel.huntech@gmail.com</a>
+      </div>
+      <div class="detail-row phone-row">
+        <span class="detail-label">Teléfono</span>
+        <a href="tel:+529623114351">+52 962 311 4351</a>
+      </div>
     </section>
+
+    <footer class="card-footer">
+      <a href="https://instagram.com/huntechtap" target="_blank" rel="noopener noreferrer">Instagram <span>@huntechtap</span></a>
+      <a href="https://facebook.com/huntechtap" target="_blank" rel="noopener noreferrer">Facebook</a>
+    </footer>
   </main>
-  <script src="js/app.js"></script>
 </body>
 </html>

@@ -2,15 +2,21 @@
 
 ## Publicar en GitHub Pages
 
-La página principal es `index.html`. Sube al repositorio estos elementos conservando sus carpetas:
+La página principal `index.html` muestra la tarjeta digital pública de Huntech. El sistema de comprobantes se encuentra por separado en `tickets.html`, para que los visitantes de la página principal no tengan que pasar por el sistema de tickets.
+
+Sube al repositorio estos elementos conservando sus carpetas:
 
 ```
 index.html
+tickets.html
+assets/logo-huntech.png
+assets/huntech-contacto.vcf
+css/tarjeta.css
 css/styles.css
 js/app.js
 ```
 
-En GitHub ve a **Settings > Pages**, selecciona la rama que contiene estos archivos y la carpeta `/ (root)`. GitHub Pages usará `index.html` automáticamente.
+En **Settings > Pages**, selecciona la rama que contiene estos archivos y la carpeta `/ (root)`. Comparte la URL base del sitio para mostrar la tarjeta. El sistema de comprobantes solo se abre usando la ruta `/tickets.html`.
 
 ## Usuarios iniciales
 
@@ -56,7 +62,7 @@ Folio | Fecha recibido | Cliente | Telefono | Tipo de equipo | Marca | Modelo | 
 Antes de usar el formulario, pega la URL (termina en `/exec`) en una pestaña nueva del navegador. Debe mostrarte algo como `{"status":"ok"}`. Si en cambio pide iniciar sesión o da error, el problema está en la implementación, no en el HTML.
 
 ## Paso 5 — Pega la URL en el formulario HTML
-1. Abre tu página de GitHub Pages desde `index.html` (por ejemplo, `https://tu-usuario.github.io/huntech-comprobantes/`)
+1. Abre el sistema de comprobantes en `https://tu-usuario.github.io/huntech-comprobantes/tickets.html`
 2. Pega la URL en el campo de configuración de arriba
 3. Pulsa **Guardar** y después **Probar conexión**. Debe aparecer "Conexión correcta con Google Sheets."
 4. Listo
