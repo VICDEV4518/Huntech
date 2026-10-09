@@ -102,7 +102,8 @@ textarea { min-height:74px; resize:vertical; }
 .t-row.saldo { color:var(--orange); font-weight:700; }
 .footer-note { display:flex; flex-direction:column; gap:4px; margin-top:12px; color:var(--green); font-size:9px; font-weight:700; text-align:center; }
 .footer-note small { color:#7a817d; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
-#r-preview > .download-wrap { text-align:center; margin-top:10px; }
+#r-preview > .download-wrap { display:grid; justify-items:center; gap:8px; margin-top:10px; }
+#r-preview > .download-wrap button { width:min(100%, 300px); }
 @media (max-width:600px) { .page-shell { width:min(100% - 20px, 820px); padding-top:38px; }.login-panel { padding:30px 22px; }.app-header { align-items:flex-start; flex-direction:column; gap:14px; }.user-area { width:100%; justify-content:space-between; }.card { padding:17px; }.form-grid { grid-template-columns:1fr; }.concepto-row { grid-template-columns:1.5fr 1fr 24px; }.config-row,.search-row { align-items:stretch; }.config-row { flex-direction:column; } }
 @keyframes panel-enter { from { opacity:0; transform:translateY(18px) scale(.98); } to { opacity:1; transform:none; } }
 @keyframes fade-rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }

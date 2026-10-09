@@ -375,8 +375,39 @@ function limpiarFormulario() {
 function renderPreview(ticket) {
   const saldo = Number(ticket.saldo ?? (ticket.monto - ticket.anticipo) ?? 0);
   const estadoLabel = getTicketBalanceLabel({ ...ticket, saldo, entregado: Boolean(ticket.entregado) });
-  $('r-preview').innerHTML = `<div class="ticket-outer"><div class="ticket-header"><div class="ticket-brand"><img class="ticket-logo" src="assets/logo-huntech.png" alt="Huntech"><div><div class="brand-name">HUNTECH</div><div class="sub2">Comprobante de servicio</div></div></div></div><div class="ticket-body"><div class="folio-pill"><span>Folio</span><strong>${escapeHtml(ticket.folio)}</strong></div><div class="ticket-meta"><div class="t-row"><span class="t-label">Fecha</span><span>${escapeHtml(ticket.fecha)}</span></div><div class="t-row"><span class="t-label">Cliente</span><span>${escapeHtml(ticket.cliente)}</span></div><div class="t-row"><span class="t-label">Equipo</span><span>${escapeHtml(`${ticket.tipo} ${ticket.marca} ${ticket.modelo}`)}</span></div></div><div class="t-section">Servicio</div>${(ticket.conceptos || []).map((item) => `<div class="t-row concept"><span>${escapeHtml(item.desc)}</span><span>${fmt(item.monto)}</span></div>`).join('')}<div class="totales"><div class="t-row"><span>Monto total</span><span>${fmt(ticket.monto)}</span></div><div class="t-row"><span>Anticipo</span><span>${fmt(ticket.anticipo)}</span></div><div class="t-row saldo"><span>${estadoLabel}</span><span>${fmt(saldo)}</span></div></div><div class="footer-note"><span>Gracias por su preferencia.</span><small>Huntech · Servicio técnico</small></div></div></div><div class="download-wrap"><button type="button" class="primary-button" id="downloadButton">Descargar comprobante PDF</button></div>`;
+  $('r-preview').innerHTML = `<div class="ticket-outer"><div class="ticket-header"><div class="ticket-brand"><img class="ticket-logo" src="assets/logo-huntech.png" alt="Huntech"><div><div class="brand-name">HUNTECH</div><div class="sub2">Comprobante de servicio</div></div></div></div><div class="ticket-body"><div class="folio-pill"><span>Folio</span><strong>${escapeHtml(ticket.folio)}</strong></div><div class="ticket-meta"><div class="t-row"><span class="t-label">Fecha</span><span>${escapeHtml(ticket.fecha)}</span></div><div class="t-row"><span class="t-label">Cliente</span><span>${escapeHtml(ticket.cliente)}</span></div><div class="t-row"><span class="t-label">Equipo</span><span>${escapeHtml(`${ticket.tipo} ${ticket.marca} ${ticket.modelo}`)}</span></div></div><div class="t-section">Servicio</div>${(ticket.conceptos || []).map((item) => `<div class="t-row concept"><span>${escapeHtml(item.desc)}</span><span>${fmt(item.monto)}</span></div>`).join('')}<div class="totales"><div class="t-row"><span>Monto total</span><span>${fmt(ticket.monto)}</span></div><div class="t-row"><span>Anticipo</span><span>${fmt(ticket.anticipo)}</span></div><div class="t-row saldo"><span>${estadoLabel}</span><span>${fmt(saldo)}</span></div></div><div class="footer-note"><span>Gracias por su preferencia.</span><small>Huntech · Servicio técnico</small></div></div></div><div class="download-wrap"><button type="button" class="primary-button" id="downloadButton">Descargar comprobante PDF</button><button type="button" class="secondary-button" id="copyClientDataButton">Copiar datos del cliente</button></div>`;
   $('downloadButton').addEventListener('click', () => descargarPDF(currentTicketData));
+  $('copyClientDataButton').addEventListener('click', () => copiarDatosCliente(ticket));
+}
+
+async function copiarDatosCliente(ticket) {
+  const text = `Cliente: ${ticket.cliente}\nTeléfono: ${ticket.telefono || 'No proporcionado'}\nFolio: ${ticket.folio}`;
+  const button = $('copyClientDataButton');
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      textarea.remove();
+      if (!copied) throw new Error('No se pudo copiar');
+    }
+
+    button.textContent = 'Copiado';
+  } catch (error) {
+    button.textContent = 'No se pudo copiar';
+  }
+
+  window.setTimeout(() => {
+    if (button.isConnected) button.textContent = 'Copiar datos del cliente';
+  }, 1800);
 }
 
 function llenarFormularioDesdeTicket(ticket) {
